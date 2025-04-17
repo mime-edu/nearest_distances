@@ -1,14 +1,14 @@
 -- See README.md for usage instructions
 
--- How many nearest matches do you want (in descending order)
+-- How many nearest matches do you want to return (in descending order)
 SET VARIABLE nearest_matches = 5;
 
-DROP TABLE matching_source;
+DROP TABLE IF EXISTS matching_source;
 
 CREATE TABLE matching_source AS
     SELECT * FROM read_csv_auto('matching_source.csv', HEADER = True);
 
--- Distance calculation and output
+-- Distance calculations
 CREATE OR REPLACE VIEW match_output_v AS
 WITH distances AS (
     SELECT
@@ -21,17 +21,18 @@ WITH distances AS (
             ON s.id <> p.id
 ),
 ordered_distances AS (
+    -- Order these distances, by school
     SELECT
         p.id,
         p.matched_id,
         p.distance_away,
-        -- Order these distance by school
         row_number() OVER (PARTITION BY p.id ORDER BY distance_away) AS distance_order
     FROM
         distances p
 )
 SELECT
-    d.*
+    d.*,
+    m.distance_order
 FROM
     distances d
     INNER JOIN ordered_distances m
