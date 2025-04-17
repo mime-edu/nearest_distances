@@ -8,15 +8,17 @@ The process assumes you have a set of locations and you want to match these to e
 2. Extract and save in an executable folder (e.g. c:\tmp)
 3. Open command line in folder where DuckDB is. 
 4. Prepare your data with, at least:
-   - a) An `id` key column to uniquely identify the rows, and join on
-   - b) `easting` and `northing` columns, used to calculate distances
-   - c) Any other columns you need, and these will be re-exported in the results
-   - Save this data in the DuckDB executable folder
+    - a) An `id` key column to uniquely identify the rows, and join on
+    - b) `easting` and `northing` columns, used to calculate distances
+    - c) Any other columns you need, and these will be re-exported in the results
+    - Save this as a CSV named `matching_source.csv` in the DuckDB executable folder
 5. Adjust the number of nearest matches you want using the `nearest_matches` variable in SQL
 6. Ensure the `.sql` file is in the same folder and then execute:
     ```
     duckdb < duck_db_pythagoras_calculations.sql
     ```
     _This will use an in-memory DB_ which ought to be fine for most cases
+7. The file `match_output_v.csv` will be created, and includes all columns from the original source plus:
+    - `matched_id`, `distance_away` and `distance_order` -> based on the matches created
 
 NB: It may take a while if you have lots of records (tested with ~20k records)
